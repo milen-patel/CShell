@@ -8,3 +8,4 @@ void OOM_GUARD(void *ptr, char *file, int number)
         exit(EXIT_FAILURE);
     }
 }
+

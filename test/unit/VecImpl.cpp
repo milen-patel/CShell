@@ -215,6 +215,7 @@ TEST(VecImpl, splice) {
     v.length = 3;
     int16_t arr[] = { 10, 20, 30, 40 };
     Vec_splice(&v, 1, 1, arr, 3);
+	buffer = (int16_t*) v.buffer;
     ASSERT_EQ(buffer[0], 100);
     ASSERT_EQ(buffer[1], 10);
     ASSERT_EQ(buffer[2], 20);
@@ -234,6 +235,7 @@ TEST(VecImpl, splice_delete_only) {
     v.length = 3;
     int arr[] = { 10, 20, 30, 40 };
     Vec_splice(&v, 1, 1, arr, 0);
+	buffer = (int16_t*) v.buffer;
     ASSERT_EQ(buffer[0], 100);
     ASSERT_EQ(buffer[1], 300);
     ASSERT_EQ(v.length, 2);
@@ -250,6 +252,7 @@ TEST(VecImpl, splice_no_modifications) {
     v.length = 3;
     int16_t arr[] = { 10, 20, 30, 40 };
     Vec_splice(&v, 0, 0, arr, 0);
+	buffer = (int16_t*) v.buffer;
     ASSERT_EQ(v.length, 3);
     ASSERT_EQ(buffer[0], 100);
     ASSERT_EQ(buffer[1], 200);
@@ -267,6 +270,7 @@ TEST(VecImpl, splice_insert_only) {
     v.length = 3;
     int16_t arr[] = { 10, 20, 30, 40 };
     Vec_splice(&v, 1, 0, arr, 3);
+	buffer = (int16_t*) v.buffer;
     ASSERT_EQ(v.length, 6);
     ASSERT_EQ(buffer[0], 100);
     ASSERT_EQ(buffer[1], 10);
@@ -302,6 +306,7 @@ TEST(VecImpl, splice_delete_entire_arr) {
     v.length = 3;
     int16_t arr[] = { 10, 20, 30, 40 };
     Vec_splice(&v, 0, 3, arr, 0); 
+	buffer = (int16_t*) v.buffer;
     ASSERT_EQ(v.length, 0);
     Vec_drop(&v); 
 }
@@ -316,6 +321,7 @@ TEST(VecImpl, splice_swap_two_arrs) {
     v.length = 3;
     int16_t arr[] = { 10, 20, 30, 40 };
     Vec_splice(&v, 0, 3, arr, 4);
+	buffer = (int16_t*) v.buffer;
     ASSERT_EQ(v.length, 4);
     ASSERT_EQ(buffer[0], 10);
     ASSERT_EQ(buffer[1], 20);
@@ -334,6 +340,7 @@ TEST(VecImpl, splice_insert_and_grow) {
     v.length = 3;
     int16_t arr[] = { 10, 20, 30, 40 };
     Vec_splice(&v, 1,1,arr,4);
+	buffer = (int16_t*) v.buffer;
     ASSERT_EQ(buffer[5], 300);
     ASSERT_EQ(v.length, 6);
     Vec_drop(&v); 
@@ -374,6 +381,7 @@ TEST(VecImpl, splice_combine_two_arrays) {
     v.length = 3;
     int16_t arr[] = { 10, 20, 30, 40 };
     Vec_splice(&v, 3, 0, arr, 4);
+	buffer = (int16_t*) v.buffer;
     ASSERT_EQ(v.length, 7);
     ASSERT_EQ(buffer[0], 100);
     ASSERT_EQ(buffer[1], 200);

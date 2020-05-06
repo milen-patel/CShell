@@ -1,5 +1,5 @@
 #include <string.h>
-
+#include <stdio.h>
 #include "Str.h"
 #include "Vec.h"
 
@@ -8,12 +8,7 @@ static char NULL_CHAR = '\0';
 Str Str_value(size_t capacity)
 {
     Str s = Vec_value(capacity + 1, sizeof(char));
-    // TODO: Replace the below lines with a call below to Vec_set
-    // once you have Vec_set correctly implemented
-    s.length = 1;
-    char *buffer = (char*) s.buffer;
-    buffer[0] = NULL_CHAR;
-    // Vec_set(&s, 0, &NULL_CHAR);
+    Vec_set(&s, 0, &NULL_CHAR);
     return s;
 }
 
@@ -35,4 +30,55 @@ const char* Str_cstr(const Str *self)
 char* Str_ref(const Str *self, const size_t index)
 {
     return (char*) Vec_ref(self, index);
+}
+
+static void exitOnError(unsigned line) {
+    fprintf(stderr, "%s:%d - Out of Bounds", __FILE__, line);
+    exit(EXIT_FAILURE);
+}
+
+Str Str_from(const char *cstr) {
+    Str newStr = Str_value(1);
+    int i = 0;
+    while (*(cstr+i) != NULL_CHAR) {
+        Vec_set(&newStr, i, cstr+i); 
+        i++;
+    }
+    /* Append the null character */
+    Vec_set(&newStr, i, &NULL_CHAR); 
+    return newStr;
+}
+
+void Str_splice(Str *self,size_t index,size_t delete_count,const char *cstr, size_t insert_count) {
+   if (delete_count+index > Str_length(self)) {
+        exitOnError(__LINE__);
+   } else if (index > Str_length(self)) {
+        exitOnError(__LINE__);
+   }
+    Vec_splice(self, index, delete_count, cstr, insert_count);
+}
+
+void Str_append(Str *self, const char *cstr){
+    size_t cstrlength = 0;
+    while (*(cstr + cstrlength) != '\0') {
+        cstrlength++;
+    }
+    Str_splice(self, Str_length(self), 0, cstr, cstrlength);
+}
+
+char Str_get(const Str *self, size_t index){
+    if ((index<0) || (index>=Str_length(self))) {
+        exitOnError(__LINE__);
+    }
+    return *((char*)Vec_ref(self,index));
+}
+
+void Str_set(Str *self, size_t index, const char value){
+   if(index < Str_length(self)) {
+        Str_splice(self, index, 1, &value, 1);
+   } else if (index == Str_length(self)) {
+        Str_splice(self,index,0, &value, 1);
+   } else {
+      exitOnError(__LINE__); 
+   }
 }
