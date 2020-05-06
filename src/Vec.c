@@ -45,4 +45,25 @@ void* Vec_ref(const Vec *self, size_t index)
     }
 }
 
-/* TODO: Define remainder of Vec.h functions */
+void Vec_get(const Vec *self, size_t index, void *out) {
+
+}
+
+void Vec_set(Vec *self, size_t index, const void *value){
+
+}
+
+bool Vec_equals(const Vec *self, const Vec *other) {
+	
+}
+
+void Vec_splice(
+        Vec *self, 
+        size_t index, 
+        size_t delete_count, 
+        const void *items, 
+        size_t insert_count
+        ) {
+
+}
+

@@ -5,7 +5,6 @@
 
 int main()
 {
-    
-
+	printf("Welcome\n");
     return EXIT_SUCCESS;
 }
