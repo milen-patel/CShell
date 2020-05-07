@@ -1,26 +1,68 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include "Vec.h"
 #include "Str.h"
+#include "Scanner.h"
+
+#define BUFF_SIZE 80 
+
+/**
+ * This program reads an input line from stdin and prints textual
+ * representations of the tokens scanned from lines of input.
+ */
+
+// These three functions provide the basis of a REPL:
+// Read-Evaluate-Print-Loop
+size_t read(Str *line, FILE *stream);
+Scanner eval(Str *input);
+void print(Scanner scanner);
 
 int main()
 {
-    int BUFFER_SIZE = 1024;
-    char buffer[BUFFER_SIZE];
-    Str myString = Str_value(BUFFER_SIZE);
+    Str line = Str_value(BUFF_SIZE);
+    while (read(&line, stdin)) {
+        print(eval(&line));
+    }
+    Str_drop(&line);
+    return EXIT_SUCCESS;
+}
 
-    /* Keep Reading Input Until We Reach EOF */
-    while (fgets(buffer, BUFFER_SIZE, stdin) != NULL) {
-        Str_append(&myString, buffer);
+size_t read(Str *line, FILE *stream) {
+    printf("scanner> ");
 
-        /* If the line length is greater than the buffer, we need to read in again before printing */
-        if(*Str_ref(&myString, Str_length(&myString)-1) == '\n') {
-            printf("%s", Str_cstr(&myString));
-            Str_splice(&myString, 0, Str_length(&myString), buffer, 0);
+    // Clear Str contents.
+    Str_splice(line, 0, Str_length(line), NULL, 0);
+
+    static char buffer[BUFF_SIZE];
+    while (fgets(buffer, BUFF_SIZE, stream) != NULL) {
+        Str_append(line, buffer);
+        if (strchr(buffer, '\n') != NULL) {
+            break;
         }
     }
-    
-    Str_drop(&myString);
-    return EXIT_SUCCESS;
-} 
+
+    return Str_length(line);
+}
+
+Scanner eval(Str *line) {
+    return Scanner_value(CharItr_of_Str(line));
+}
+
+void print(Scanner scanner) {
+    while (Scanner_has_next(&scanner)) {
+        Token next = Scanner_next(&scanner);
+        switch (next.type) {
+            case END_TOKEN: 
+                printf("END\n");
+                break;
+            case WORD_TOKEN:
+                printf("WORD(%s)\n", Str_cstr(&next.lexeme));
+                break;
+            case PIPE_TOKEN:
+                printf("PIPE\n");
+                break;
+        }
+        Str_drop(&next.lexeme);
+    }
+}
