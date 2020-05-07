@@ -4,16 +4,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-/**
- * Vec - a dynamically growable array of any type.
- */
+/* Vec is an abstraction representing a growabale, dynamic
+ * array. Members of a Vec are not meant to be accessed directly,
+ * and thus Vec interaction should be performed strictly using the
+ * methods listed in this header file.  */
 
-/**
- * The Vec struct is a "thick pointer".
- *
- * Users of Vec should not access these members directly!
- * Instead, use the operations exposed in the functions below.
- */
 typedef struct Vec {
     size_t item_size; /* size of an item in bytes */
     size_t length;    /* number of items in Vec */
