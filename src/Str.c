@@ -9,7 +9,8 @@ Str Str_value(size_t capacity)
 {
     Str s = Vec_value(capacity + 1, sizeof(char));
     Vec_set(&s, 0, &NULL_CHAR);
-    return s;
+    int x;
+	return s;
 }
 
 void Str_drop(Str *self)

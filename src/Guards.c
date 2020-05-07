@@ -7,5 +7,6 @@ void OOM_GUARD(void *ptr, char *file, int number)
         fprintf(stderr, "%s:%d Out of Memory", file, number);
         exit(EXIT_FAILURE);
     }
+
 }
 
