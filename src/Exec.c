@@ -67,7 +67,7 @@ static int exec_pipe(Node *node, Context *ctx) {
 }
 
 static int exec_command(Node *node, Context *ctx) {
-	int execSuccessVal = -1;
+	int execSuccessVal = 1;
 	if (fork() == FORKED_CHILD) {
 		/* Evaluate Context */
 		dup2(ctx->fd[STDIN_FILENO], STDIN_FILENO); /* Redirect STDIN */
@@ -87,7 +87,12 @@ static int exec_command(Node *node, Context *ctx) {
 			argv[i] = Str_ref(word, 0);
 		}
 
-		execSuccessVal = execvp(argv[0], argv);
+		if(execvp(argv[0], argv) == -1) {
+			execSuccessVal=0;
+			//execSuccessVal = 1;
+			//temp++;
+			exit(0); /* If the forked process fails, kill it */
+		}
 	}
-	return 1; /* One child was spawned */	
+	return execSuccessVal; /* One child was spawned */	
 }
