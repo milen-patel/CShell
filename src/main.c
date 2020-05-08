@@ -4,6 +4,7 @@
 
 #include "Str.h"
 #include "Scanner.h"
+#include "Parser.h"
 
 #define BUFF_SIZE 80 
 
@@ -15,21 +16,23 @@
 // These three functions provide the basis of a REPL:
 // Read-Evaluate-Print-Loop
 size_t read(Str *line, FILE *stream);
-Scanner eval(Str *input);
-void print(Scanner scanner);
+Node* eval(Str *input);
+void print(Node *node, size_t indention);
 
 int main()
 {
     Str line = Str_value(BUFF_SIZE);
     while (read(&line, stdin)) {
-        print(eval(&line));
+        Node *parse_tree = eval(&line);
+        print(parse_tree, 0);
+        Node_drop(parse_tree);
     }
     Str_drop(&line);
     return EXIT_SUCCESS;
 }
 
 size_t read(Str *line, FILE *stream) {
-    printf("scanner> ");
+    printf("parser> ");
 
     // Clear Str contents.
     Str_splice(line, 0, Str_length(line), NULL, 0);
@@ -45,24 +48,30 @@ size_t read(Str *line, FILE *stream) {
     return Str_length(line);
 }
 
-Scanner eval(Str *line) {
-    return Scanner_value(CharItr_of_Str(line));
+Node* eval(Str *line) {
+    Scanner scanner = Scanner_value(CharItr_of_Str(line));
+    return parse(&scanner);
 }
 
-void print(Scanner scanner) {
-    while (Scanner_has_next(&scanner)) {
-        Token next = Scanner_next(&scanner);
-        switch (next.type) {
-            case END_TOKEN: 
-                printf("END\n");
-                break;
-            case WORD_TOKEN:
-                printf("WORD(%s)\n", Str_cstr(&next.lexeme));
-                break;
-            case PIPE_TOKEN:
-                printf("PIPE\n");
-                break;
-        }
-        Str_drop(&next.lexeme);
+void print(Node *node, size_t indention) {
+    for (size_t i = 0; i < indention; ++i) { putchar(' '); }
+
+    switch (node->type) {
+        case ERROR_NODE:
+            printf("ERROR: %s\n", node->data.error);
+            break;
+        case COMMAND_NODE:
+            printf("COMMAND:");
+            StrVec *words = &node->data.command;
+            for (size_t i = 0; i < StrVec_length(words); ++i) {
+                printf(" %s", Str_cstr(StrVec_ref(words, i)));
+            }
+            putchar('\n');
+            break;
+        case PIPE_NODE:
+            printf("PIPE:\n");
+            print(node->data.pipe.left, indention + 4);
+            print(node->data.pipe.right, indention + 4);
+            break;
     }
 }
