@@ -5,6 +5,7 @@
 #include "Str.h"
 #include "Scanner.h"
 #include "Parser.h"
+#include "Exec.h"
 
 #define BUFF_SIZE 80 
 
@@ -24,7 +25,7 @@ int main()
     Str line = Str_value(BUFF_SIZE);
     while (read(&line, stdin)) {
         Node *parse_tree = eval(&line);
-        print(parse_tree, 0);
+		exec(parse_tree);
         Node_drop(parse_tree);
     }
     Str_drop(&line);
@@ -32,7 +33,7 @@ int main()
 }
 
 size_t read(Str *line, FILE *stream) {
-    printf("parser> ");
+    printf("CShell> ");
 
     // Clear Str contents.
     Str_splice(line, 0, Str_length(line), NULL, 0);
