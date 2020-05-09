@@ -18,3 +18,7 @@
 5. **Exec**: Takes the root node of a parse tree and executes the appropriate shell commands while handling errors and piping.
 
 ---
+
+# Installation
+Clone the repository and execute 'make all' followed by 'make run'
+
