@@ -5,18 +5,15 @@
 #include "Guards.h"
 #include "Vec.h"
 
+/* Helper function which takes a pointer to a vec and ensures that the
+ * Vec has enough heap storage to hold n elements of its 
+ * size */
 static void _ensure_capacity(Vec *self, size_t n);
+
+/* Helper function that will terminate the program with an appropriate
+ * error message, given a line reference to the error */
 static void exitOnError(unsigned line);
 
-static void _ensure_capacity(Vec *self, size_t n) 
-{
-    if (n > self->capacity) {
-        size_t new_capacity = n * 2;
-        self->buffer = realloc(self->buffer, new_capacity * self->item_size);
-        OOM_GUARD(self->buffer, __FILE__, __LINE__);
-        self->capacity = new_capacity;
-    }
-}
 Vec Vec_value(size_t capacity, size_t item_size)
 {
     Vec vec = {
@@ -47,16 +44,11 @@ void* Vec_ref(const Vec *self, size_t index)
     if (index < self->length) {
         return self->buffer + (index * self->item_size);
     } else {
-        fprintf(stderr, "%s:%d - Out of Bounds", __FILE__, __LINE__);
-        exit(EXIT_FAILURE);
+		exitOnError(__LINE__);
     }
+	return NULL; /* Remove warnings */
 }
 
-
-static void exitOnError(unsigned line) {
-    fprintf(stderr, "%s:%d - Out of Bounds", __FILE__, line);
-    exit(EXIT_FAILURE);
-}
 
 void Vec_get(const Vec *self, size_t index, void *out) {
     if (index < self->length) {
@@ -143,3 +135,18 @@ void Vec_splice(Vec *self, size_t index, size_t delete_count, const void *items,
     }
 }
 
+static void _ensure_capacity(Vec *self, size_t n) 
+{
+	/* Check if reallocation is needed */
+    if (n > self->capacity) {
+        size_t new_capacity = n * 2;
+        self->buffer = realloc(self->buffer, new_capacity * self->item_size);
+        OOM_GUARD(self->buffer, __FILE__, __LINE__);
+        self->capacity = new_capacity;
+    }
+}
+
+static void exitOnError(unsigned line) {
+    fprintf(stderr, "%s:%d - Out of Bounds", __FILE__, line);
+    exit(EXIT_FAILURE);
+}

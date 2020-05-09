@@ -5,6 +5,10 @@
 
 static char NULL_CHAR = '\0';
 
+/* Helper function that will terminate the program with an appropriate
+ * error message, given a line reference to the error */
+static void exitOnError(unsigned line);
+
 Str Str_value(size_t capacity)
 {
     Str s = Vec_value(capacity + 1, sizeof(char));
@@ -33,11 +37,6 @@ char* Str_ref(const Str *self, const size_t index)
     return (char*) Vec_ref(self, index);
 }
 
-static void exitOnError(unsigned line) {
-    fprintf(stderr, "%s:%d - Out of Bounds", __FILE__, line);
-    exit(EXIT_FAILURE);
-}
-
 Str Str_from(const char *cstr) {
     Str newStr = Str_value(1);
     int i = 0;
@@ -61,7 +60,7 @@ void Str_splice(Str *self,size_t index,size_t delete_count,const char *cstr, siz
 
 void Str_append(Str *self, const char *cstr){
     size_t cstrlength = 0;
-    while (*(cstr + cstrlength) != '\0') {
+    while (*(cstr + cstrlength) != NULL_CHAR) {
         cstrlength++;
     }
     Str_splice(self, Str_length(self), 0, cstr, cstrlength);
@@ -82,4 +81,10 @@ void Str_set(Str *self, size_t index, const char value){
    } else {
       exitOnError(__LINE__); 
    }
+}
+
+/* Helper Functions */
+static void exitOnError(unsigned line) {
+    fprintf(stderr, "%s:%d - Out of Bounds", __FILE__, line);
+    exit(EXIT_FAILURE);
 }
